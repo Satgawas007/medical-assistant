@@ -25,7 +25,7 @@ export default class Login extends Component {
             this.setState({url: "https://lowercasesatish.herokuapp.com"})
         } 
     }
-    
+    //Get data from database
     getDataFromDb = (email,password) => {        
         axios.post(this.state.url+"/getData", {
                 postemail: email,

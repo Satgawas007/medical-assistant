@@ -18,7 +18,7 @@ export default class Login extends Component {
         this.handleClick = this.handleClick.bind(this)        
     }   
     //Set url as per the environment
-    //Set Heroku url for production
+    //Set Heroku url for production and set localhost for development
     componentDidMount() {
         if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
             this.setState({url: "http://localhost:3001"})

@@ -34,7 +34,7 @@ export default class Login extends Component {
         .then(res => this.setState({data: res.data.data}))
         .then(() => this.verifyUser(this.state.data))               
     };
-
+    //Verify if user already exists
     verifyUser = (data) => {
         if ((data.length) <= 0) {    
             this.setState({status: "User does not exist"})

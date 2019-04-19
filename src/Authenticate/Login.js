@@ -40,9 +40,13 @@ export default class Login extends Component {
             this.setState({status: "User does not exist"})
         } else {
             this.setState({status: "Login Successful"})
-        }       
+        }        
     }   
+<<<<<<< HEAD
     //Handle the 'Click' event
+=======
+    //Handle the click event
+>>>>>>> branch1
     handleClick () {
         const email = this.state.email
         const password = this.state.password

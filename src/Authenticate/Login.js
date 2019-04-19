@@ -18,6 +18,7 @@ export default class Login extends Component {
         this.handleClick = this.handleClick.bind(this)        
     }   
     //Set url as per the environment
+    //Set Heroku url for production
     componentDidMount() {
         if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
             this.setState({url: "http://localhost:3001"})
@@ -42,11 +43,7 @@ export default class Login extends Component {
             this.setState({status: "Login Successful"})
         }        
     }   
-<<<<<<< HEAD
     //Handle the 'Click' event
-=======
-    //Handle the click event
->>>>>>> branch1
     handleClick () {
         const email = this.state.email
         const password = this.state.password

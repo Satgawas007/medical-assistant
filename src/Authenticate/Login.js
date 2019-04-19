@@ -42,6 +42,7 @@ export default class Login extends Component {
             this.setState({status: "Login Successful"})
         }       
     }   
+    //Handle the 'Click' event
     handleClick () {
         const email = this.state.email
         const password = this.state.password

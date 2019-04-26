@@ -8,10 +8,11 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import '../MedicalAssistant.css'
 import axios from "axios"
+import {Checkbox} from 'primereact/checkbox';
 
-export default class HealinPlan extends Component {
-    constructor() {
-        super()
+export default class HealinPlanDetails extends Component {
+    constructor(props) {
+        super(props)
         this.state = {
             planName: "",
             healingData: [],
@@ -33,8 +34,13 @@ export default class HealinPlan extends Component {
       console.log(healing)     
       var fieldName = e.target.name.substr(0,3)
       var fieldRow = e.target.name.substr(4)     
-      
-      if (fieldName === 'hea') {           
+      if (fieldName === 'del') {
+        if (healing[fieldRow].toAdd) {
+          healing[fieldRow].toDelete = false
+        } else {
+          healing[fieldRow].toDelete = e.target.checked        
+        }
+      } else if (fieldName === 'hea') {           
         healing[fieldRow].typeAndDesc = e.target.value
         if (healing[fieldRow].toAdd) {
           healing[fieldRow].toUpdate = false
@@ -63,15 +69,25 @@ export default class HealinPlan extends Component {
   
     componentDidMount() {
       console.log("component did mount")   
-      this.getAllDataFromDb()
+      
+      const pathname = window.location.pathname
+      const planName = pathname.substring(pathname.lastIndexOf('/')+1);
+      this.setState({planName})
+      this.getAllDataFromDb(planName)
+      console.log(planName)  
     }
-    getAllDataFromDb = () => {    
+    getAllDataFromDb = (planName) => {    
      
       axios.get(this.props.url+"/getMedicMasterAll")
       .then(res => this.setState({medicData: res.data.data}, () => console.log(this.state.medicData)))    
-      .then(() => this.verifyMedicData(this.state.medicData))            
+      .then(() => this.verifyMedicData(this.state.medicData))       
       
-    }; 
+      axios.post(this.props.url+"/getMHealingMaster", {
+        planName: planName
+      })
+      .then(res => this.setState({healingData: res.data.data}, () => console.log(this.state.healingData)))    
+      .then(() => this.verifyHealingData(this.state.healingData))       
+    }
     verifyMedicData = (data) => {
       if ((data.length) <= 0) {    
         console.log("I am here now")  
@@ -82,18 +98,45 @@ export default class HealinPlan extends Component {
           this.setState({medicData},console.log(medicData))      
       }      
     }   
-    
-    putDataToDb = (planName, typeAndDesc, onDate, dbType) => {        
+    verifyHealingData = (data) => {
+      if ((data.length) <= 0) {    
+        console.log("I am here now healing")  
+      } else {  
+        var healing = data.map(val => ({
+          id: val._id,
+          typeAndDesc: JSON.parse(`{ "typeAndDesc":"`+val.typeAndDesc+`"}`),
+          onDate: val.onDate,
+          toAdd: false,
+          toUpdate: false,
+          toDelete: false
+        }));       
+        console.log("Healing") 
+        this.setState({healing},console.log(healing))      
+      }      
+    }   
+    putDataToDb = (id, planName, typeAndDesc, onDate, dbType) => {        
       console.log("inside putdatata react")
       if (dbType === "Add") {
         axios.post(this.props.url+"/putHealingMaster", {
-          planName: planName,
+          planName: decodeURI(planName),
           typeAndDesc: typeAndDesc,
           onDate: onDate
         })
        
-      } 
-             
+      } else if (dbType === "Delete") {
+        console.log("inside delete")
+        axios.post(this.props.url+"/deleteHealingData", {
+            id: id,
+        typeAndDesc: typeAndDesc,
+          onDate: onDate
+        })
+      } else if (dbType === "Update") {
+        axios.post(this.props.url+"/updateHealingData", {
+          id: id,
+          typeAndDesc: typeAndDesc,
+          onDate: onDate
+       }).then((res) => console.log(res.data.data))       
+      }                
     }  
     handleClick () {
       var healing = this.state.healing    
@@ -133,12 +176,15 @@ export default class HealinPlan extends Component {
           let onDate = healingToUpdate[i].onDate
           let planName = this.state.planName
           if (healingToUpdate[i].toAdd) {            
-            this.putDataToDb(planName, typeAndDesc, onDate, "Add")
-          }
-        }
+            this.putDataToDb("", planName, typeAndDesc, onDate, "Add")
+          } else if (healingToUpdate[i].toDelete) {
+            this.putDataToDb(healingToUpdate[i].id, planName, typeAndDesc, onDate, "Delete")
+          } else if (healingToUpdate[i].toUpdate) {
+            this.putDataToDb(healingToUpdate[i].id, planName, typeAndDesc, onDate, "Update")
+          } 
+        } 
         window.location.reload()
-      }   
-   
+      }      
   }
     addRow = (e) => {
     console.log(this.state)
@@ -155,6 +201,7 @@ export default class HealinPlan extends Component {
        let medicData = this.state.medicData
        medicData = medicData.sort((a,b) => (a.typeAndDesc > b.typeAndDesc) ? 1 : ((b.typeAndDesc > a.typeAndDesc) ? -1 : 0)); 
        let healing = this.state.healing
+       const planName = decodeURI(this.state.planName)
        console.log("in render")
        console.log(healing)
         return (
@@ -162,10 +209,9 @@ export default class HealinPlan extends Component {
             <div className="content-section implementation" >    
               <br/>                
               <TabView style={{width:"800px"}} activeIndex={this.state.activeIndex} onTabChange={(e) => this.setState({activeIndex: e.index})}>
-                <TabPanel header="Healing Plan" className="MedicalAssistant">                       
-                <label>Enter Plan Name:</label>
-                <InputText required = {true} value={this.state.planName} onChange={(e) => this.setState({planName: e.target.value})} />                        
-                <br /><br />  
+                <TabPanel header={planName} className="MedicalAssistant">                       
+                <h3 className="first">{planName}</h3>
+                <br /> 
                 <label id="myHeaderHealing">Medicine/Measurements/Events</label>
                 <label id="myHeaderHealing" style={{marginLeft: "5px"}}>Select Date Time</label>  
                 <label id="myHeaderHealing" style={{marginLeft: "5px"}}>Delete Entry</label>                           
@@ -177,7 +223,7 @@ export default class HealinPlan extends Component {
                 
                 <InputText type="datetime-local" name={`cal-${idx}`} id="myHeaderHealing" value={val.onDate} onChange={this.handleChange} />                        
 
-                <button id="myButton" label="Click" data-id={idx} icon="pi pi-check" style={{marginLeft: 30}} onClick={this.deleteRow}>Delete</button>         
+                <Checkbox name={`del-${idx}`} data-id={idx} checked={val.toDelete} style={{marginLeft: 30}} onChange={this.handleChange} />
 
                 </div>
                   ))

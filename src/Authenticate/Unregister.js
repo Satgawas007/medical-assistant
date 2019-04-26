@@ -23,11 +23,11 @@ export default class Unregister extends Component {
         if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
             this.setState({url: "http://localhost:3001"})
         } else {
-            this.setState({url: "https://lowercasesatish.herokuapp.com"})
+            this.setState({url: "https://medicalassistance.herokuapp.com"})
         } 
     }
     getDataFromDb = (email,password) => {        
-        axios.post(this.state.url+"/getData", {
+        axios.post(this.state.url+"/getUserData", {
                 postemail: email,
                 postpassword: password
             })             
@@ -35,7 +35,7 @@ export default class Unregister extends Component {
         .then(() => this.verifyUser(this.state.data))               
     }
     deleteFromDb = (email,password) => {      
-        axios.delete(this.state.url+"/deleteData", {
+        axios.delete(this.state.url+"/deleteUserData", {
             data: {
                 email: email,
                 password: password                

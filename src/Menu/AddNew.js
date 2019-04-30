@@ -8,8 +8,9 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import '../MedicalAssistant.css'
 import {Checkbox} from 'primereact/checkbox';
+import { connect } from 'react-redux';
 
-export default class AddNew extends Component {
+class AddNew extends Component {
         
     constructor(props) {
         super(props);
@@ -54,7 +55,8 @@ export default class AddNew extends Component {
       if (dbType === "Add") {
         axios.post(this.props.url+"/putMedicMaster", {
           medType: medType,
-            desc: desc
+            desc: desc,
+            addEmail: this.props.email
         })
        
       } else if (dbType === "Delete") {
@@ -68,7 +70,8 @@ export default class AddNew extends Component {
         axios.post(this.props.url+"/updateMedicData", {
           id: id,
         medType: medType,
-          desc: desc
+          desc: desc,
+          updateEmail: this.props.email
        }).then((res) => console.log(res.data.data))       
       }                
     }  
@@ -89,7 +92,7 @@ export default class AddNew extends Component {
             this.putDataToDb(medic[i].id, medType, desc, "Update")
           }        
       }      
-     
+      
      window.location.reload()
     }
     handleChange = (e) => {         
@@ -153,7 +156,7 @@ export default class AddNew extends Component {
               </div>
               <br />    
               <div className="content-section implementation button-demo">
-                <Button label="Submit" className="p-button-rounded" onClick={this.handleClick}/>     
+                <Button disabled={this.props.email === "Guest"} label="Submit" className="p-button-rounded" onClick={this.handleClick}/>     
                 <Button style={{marginLeft: 10}} label={`Add ${this.props.medType}`} className="p-button-rounded" onClick={this.addRow}/>                               
               </div>             
               <br />            
@@ -163,3 +166,7 @@ export default class AddNew extends Component {
       )
     }
 }
+function mapStateToProps(state) {     
+  return {  isLoggedIn: state.isLoggedIn, email: state.email }
+}
+export default connect(mapStateToProps)(AddNew);

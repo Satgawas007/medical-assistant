@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
-import {InputText} from 'primereact/inputtext'
 import {Password} from 'primereact/password'
 import {Button} from 'primereact/button'
 import axios from "axios"
+import { connect } from 'react-redux';
+import { setLogin } from '../Redux/actions'
+import '../MedicalAssistant.css'
 
-export default class Unregister extends Component {
+class Unregister extends Component {
         
     constructor() {
         super();
@@ -25,6 +27,7 @@ export default class Unregister extends Component {
         } else {
             this.setState({url: "https://medicalassistance.herokuapp.com"})
         } 
+        this.setState({email: this.props.email})
     }
     getDataFromDb = (email,password) => {        
         axios.post(this.state.url+"/getUserData", {
@@ -47,6 +50,7 @@ export default class Unregister extends Component {
     handleUpdateStatus(success) {
         if (success) { 
             this.setState({status: "Successfully Unregistered"})
+            this.props.setLogin(false,"")
         } else {
             this.setState({status: "Error during user unregistration"})
         }                      
@@ -70,16 +74,16 @@ export default class Unregister extends Component {
     }        
     render() {
         return (     
-            <div>      
+            <div>  
                 <div className="content-section implementation">                   
-                    <h3 className="first">Enter email address</h3>
-                    <InputText value={this.state.email} onChange={(e) => this.setState({email: e.target.value})} />                      
+                    <h3 className="first">Email address</h3>
+                    <label id="unregisterEmail" >{this.state.email}</label>                   
                     <h3 className="first">Enter Password</h3>
                     <Password feedback={false} value={this.state.password} onChange={(e) => this.setState({password: e.target.value})}/>                   
                 </div>
                 <br />
                 <div className="content-section implementation button-demo">
-                    <Button label="Submit" className="p-button-rounded" onClick={this.handleClick} />
+                    <Button label="Submit" className="p-button-rounded" onClick={this.handleClick} disabled={!this.props.isLoggedIn} />
                 </div>
                 <br />
                 <div>Info: {this.state.status}</div>
@@ -87,3 +91,14 @@ export default class Unregister extends Component {
         )
     }
 }
+const mapDispatchToProps = dispatch => { 
+    return {
+      setLogin: (isLoggedIn,email) => {
+        dispatch(setLogin(isLoggedIn,email))
+      }
+    };
+  };
+  function mapStateToProps(state) {     
+      return {  isLoggedIn: state.isLoggedIn, email: state.email }
+  }
+  export default connect(mapStateToProps,mapDispatchToProps)(Unregister);

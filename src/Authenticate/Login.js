@@ -3,8 +3,10 @@ import {InputText} from 'primereact/inputtext'
 import {Password} from 'primereact/password'
 import {Button} from 'primereact/button'
 import axios from "axios"
+import { connect } from 'react-redux';
+import { setLogin } from '../Redux/actions'
 
-export default class Login extends Component {
+class Login extends Component {
         
     constructor() {
         super();
@@ -39,8 +41,11 @@ export default class Login extends Component {
     verifyUser = (data) => {
         if ((data.length) <= 0) {    
             this.setState({status: "User does not exist"})
+            this.props.setLogin(false,"")  
         } else {
             this.setState({status: "Login Successful"})
+            this.props.setLogin(true,this.state.email)    
+
         }        
     }   
     //Handle the 'Click' event
@@ -51,7 +56,7 @@ export default class Login extends Component {
         if ((email === "" ) || (email === null ) || (email === undefined ) || (password === "" ) || (password === null ) || (password === undefined )) {
             this.setState({status: "Please enter email and password"})       
         } else {
-            this.getDataFromDb(email, password)
+            this.getDataFromDb(email, password)            
         }
     }
         
@@ -66,7 +71,7 @@ export default class Login extends Component {
                 </div>
                 <br />
                 <div className="content-section implementation button-demo">
-                    <Button label="Login" className="p-button-rounded" onClick={this.handleClick} />
+                    <Button label="Login" className="p-button-rounded" onClick={this.handleClick} disabled={this.props.isLoggedIn} />
                 </div>
                 <br />
                 <div>Info: {this.state.status}</div>
@@ -74,3 +79,14 @@ export default class Login extends Component {
         )
     }
 }
+const mapDispatchToProps = dispatch => { 
+  return {
+    setLogin: (isLoggedIn,email) => {
+      dispatch(setLogin(isLoggedIn,email))
+    }
+  };
+};
+function mapStateToProps(state) {     
+    return {  isLoggedIn: state.isLoggedIn, email: state.email }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Login);

@@ -9,8 +9,9 @@ import 'primeicons/primeicons.css'
 import '../MedicalAssistant.css'
 import axios from "axios"
 import {Checkbox} from 'primereact/checkbox';
+import { connect } from 'react-redux';
 
-export default class HealinPlanDetails extends Component {
+class HealinPlanDetails extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -120,7 +121,8 @@ export default class HealinPlanDetails extends Component {
         axios.post(this.props.url+"/putHealingMaster", {
           planName: decodeURI(planName),
           typeAndDesc: typeAndDesc,
-          onDate: onDate
+          onDate: onDate,
+          addEmail: this.props.email
         })
        
       } else if (dbType === "Delete") {
@@ -134,7 +136,8 @@ export default class HealinPlanDetails extends Component {
         axios.post(this.props.url+"/updateHealingData", {
           id: id,
           typeAndDesc: typeAndDesc,
-          onDate: onDate
+          onDate: onDate,
+          updateEmail: this.props.email
        }).then((res) => console.log(res.data.data))       
       }                
     }  
@@ -182,7 +185,8 @@ export default class HealinPlanDetails extends Component {
           } else if (healingToUpdate[i].toUpdate) {
             this.putDataToDb(healingToUpdate[i].id, planName, typeAndDesc, onDate, "Update")
           } 
-        } 
+        }    
+      
         window.location.reload()
       }      
   }
@@ -232,7 +236,7 @@ export default class HealinPlanDetails extends Component {
                
                 <br /><br />  
                 <div className="content-section implementation button-demo">
-                  <Button label="Submit" className="p-button-rounded" onClick={this.handleClick} />
+                  <Button disabled={this.props.email === "Guest"} label="Submit" className="p-button-rounded" onClick={this.handleClick} />
                   <Button style={{marginLeft: 10}} label="Add Row" className="p-button-rounded" onClick={this.addRow}/>                               
                 </div>
                 <br/>
@@ -244,3 +248,7 @@ export default class HealinPlanDetails extends Component {
         )
     }
 }
+function mapStateToProps(state) {     
+  return {  isLoggedIn: state.isLoggedIn, email: state.email }
+}
+export default connect(mapStateToProps)(HealinPlanDetails);

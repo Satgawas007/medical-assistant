@@ -38,7 +38,7 @@ module.exports = function(router) {
     console.log("inside putData")
     let medic = new Medic();
     console.log(req.body)
-    const { medType, desc } = req.body;  
+    const { medType, desc, addEmail } = req.body;  
     if (!medType || !desc) {
       return res.json({
         success: false,
@@ -48,6 +48,7 @@ module.exports = function(router) {
     console.log("desc"+desc)
     medic.medType = medType;
     medic.desc = desc;
+    medic.addEmail = addEmail;
     medic.save(err => {    
       if (err) return res.json({ success: false, error: err });
       return res.json({ success: true });
@@ -63,8 +64,8 @@ module.exports = function(router) {
     });
   });
   router.post("/updateMedicData", (req, res) => {
-    const { id, medType, desc } = req.body;   
-    Medic.findByIdAndUpdate({_id: id}, {$set: {desc: desc}}, err => {
+    const { id, medType, desc, updateEmail } = req.body;   
+    Medic.findByIdAndUpdate({_id: id}, {$set: {desc: desc, updateEmail: updateEmail}}, err => {
       console.log(err)
       if (err) return res.json({ success: false, error: err });
       return res.json({ success: true });

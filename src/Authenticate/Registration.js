@@ -45,7 +45,7 @@ export default class Registration extends Component {
     }
     handleUpdateStatus(success) {
         if (success) { 
-            this.setState({status: "User added successfully"})
+            this.setState({status: "User added successfully, Please login to proceed."})
         } else {
             this.setState({status: "Error during user updation"})
         }                      

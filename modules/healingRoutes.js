@@ -28,7 +28,7 @@ module.exports = function(router) {
     console.log("inside putData")
     let healing = new Healing();
     console.log(req.body)
-    const { planName, typeAndDesc, onDate } = req.body;  
+    const { planName, typeAndDesc, onDate, addEmail } = req.body;  
     if (!planName || !typeAndDesc || !onDate) {
       return res.json({
         success: false,
@@ -39,6 +39,7 @@ module.exports = function(router) {
     healing.planName = planName;
     healing.typeAndDesc = typeAndDesc;
     healing.onDate = onDate;
+    healing.addEmail = addEmail;
     healing.save(err => {    
       if (err) return res.json({ success: false, error: err });
       return res.json({ success: true });
@@ -54,8 +55,8 @@ module.exports = function(router) {
     });
   });
   router.post("/updateHealingData", (req, res) => {
-    const { id, typeAndDesc, onDate } = req.body;   
-    Healing.findByIdAndUpdate({_id: id}, {$set: {typeAndDesc: typeAndDesc}}, err => {
+    const { id, typeAndDesc, onDate, updateEmail } = req.body;   
+    Healing.findByIdAndUpdate({_id: id}, {$set: {typeAndDesc: typeAndDesc, updateEmail: updateEmail}}, err => {
       console.log(err)
       if (err) return res.json({ success: false, error: err });
       return res.json({ success: true });

@@ -1,2 +1,4 @@
 #myHeader { display: inline-block; width: 180px; }
 #myHeaderHealing { display: inline-block; width: 240px; }
+#loginHeader { display: inline-block; width: 600px; }
+#unregisterEmail { display: inline-block; background-color: lightgray; width: 170px; height: 30px;}

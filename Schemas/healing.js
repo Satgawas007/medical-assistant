@@ -7,7 +7,9 @@ const HealingSchema = new Schema(
   {   
     planName: String,
     typeAndDesc: String,
-    onDate: String   
+    onDate: String,
+    addEmail: String,
+    updateEmail: String   
   },
   {
     timestamps: true

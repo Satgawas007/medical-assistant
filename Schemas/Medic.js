@@ -6,7 +6,9 @@ const Schema = mongoose.Schema;
 const MedicSchema = new Schema(
   {       
     medType: String,
-    desc: String   
+    desc: String,
+    addEmail: String,
+    updateEmail: String    
   },
   {
     timestamps: true

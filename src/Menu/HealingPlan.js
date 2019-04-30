@@ -8,8 +8,9 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import '../MedicalAssistant.css'
 import axios from "axios"
+import { connect } from 'react-redux';
 
-export default class HealinPlan extends Component {
+class HealinPlan extends Component {
     constructor() {
         super()
         this.state = {
@@ -89,7 +90,8 @@ export default class HealinPlan extends Component {
         axios.post(this.props.url+"/putHealingMaster", {
           planName: planName,
           typeAndDesc: typeAndDesc,
-          onDate: onDate
+          onDate: onDate,
+          addEmail: this.props.email
         })
        
       } 
@@ -186,7 +188,7 @@ export default class HealinPlan extends Component {
                
                 <br /><br />  
                 <div className="content-section implementation button-demo">
-                  <Button label="Submit" className="p-button-rounded" onClick={this.handleClick} />
+                  <Button disabled={this.props.email === "Guest"} label="Submit" className="p-button-rounded" onClick={this.handleClick} />
                   <Button style={{marginLeft: 10}} label="Add Row" className="p-button-rounded" onClick={this.addRow}/>                               
                 </div>
                 <br/>
@@ -198,3 +200,7 @@ export default class HealinPlan extends Component {
         )
     }
 }
+function mapStateToProps(state) {     
+  return {  isLoggedIn: state.isLoggedIn, email: state.email }
+}
+export default connect(mapStateToProps)(HealinPlan);
